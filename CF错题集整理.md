@@ -249,7 +249,7 @@
   
   
 
-## ***CF784 错题解析***
+## ***CF790 错题解析***
 
 #### ***D. X-Sum***
 
@@ -676,6 +676,198 @@ signed main() {
 			cin >> num;
 			nums.push_back(num);
 		}
+		solve();
+	}
+	return 0;
+}
+```
+
+### ***H2. Maximum Crossings (Hard Version)***
+
+由题意得本题就是求逆序对，本人刚想的是归并排序求逆序对，在bilibili学到了新知识叫树状数组
+
+***Code***
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+int a[200005];
+int test, n, ans;
+int f[200005];
+
+void clear() {
+	memset(a, 0, sizeof(a));
+	ans = 0;
+	memset(f, 0, sizeof(f));
+}
+
+void add(int x, int y) {
+	for (; x <= n; x += x & (-x)) f[x] += y;
+}
+
+int ask(int x) {
+	int res = 0;
+	for (; x; x -= x & (-x)) {
+		res += f[x];
+	}
+	return res;
+}
+void solve() {
+	for (int i = n; i; i--) {
+		ans += ask(a[i]);
+		add(a[i], 1);
+	}
+	cout << ans << '\n';
+
+}
+signed main() {
+	cin >> test;
+	while (test--) {
+		clear();
+
+		cin >> n;
+		for (int i = 1; i <= n; i++) {
+			cin >> a[i];
+		}
+
+		solve();
+
+	}
+}
+```
+
+##### **<font color="red"> 建议大家多考虑前缀和因为我想起来这玩意用处蛮大的</font>**
+
+
+
+## [Educational Codeforces Round 189 (Rated for Div. 2)](https://codeforces.com/contest/2225) 错题解析
+
+
+
+### ***C. Red-Black Pairs***
+
+典型的dp板子题，但是本人好久不做忘了很多，需要补充一些dp板子知识，当前面情况已经模拟好后，不难发现要么竖着统计要么两行横着统计
+
+***Code***
+
+```cpp
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+
+const int N = 2e5+5;
+
+int t;
+string s1, s2;
+int n;
+int dp[N];
+
+void clear() {
+	s1 = "";
+	s2 = "";
+}
+
+
+void solve() {
+	memset(dp, 0x3f3f3f3f, sizeof(dp));
+	dp[n] = 0;
+	for (int i = n - 1; i >= 0; i--) {
+		int v = 0;
+		if (s1[i] != s2[i]) v = 1;
+		dp[i] = min(dp[i], v + dp[i + 1]);
+		if (i < n - 1) {
+			int h = 0;
+			if (s1[i] != s1[i + 1]) h += 1;
+			if (s2[i] != s2[i + 1]) h += 1;
+			dp[i] = min(dp[i], h + dp[i + 2]);
+		}
+	}
+	cout << dp[0] << '\n';
+}
+
+
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin >> t;
+	cin.ignore();
+	while (t--) {
+		clear();
+		cin >> n;
+		for (int i = 0; i < n; i++) {
+			char ch;
+			cin >> ch;
+			s1 += ch;
+		}
+		cin.ignore();
+		for (int i = 0; i < n; i++) {
+			char ch;
+			cin >> ch;
+			s2 += ch;
+		}
+
+		solve();
+	}
+	return 0;
+}
+```
+
+### ***D. Exceptional Segments***
+
+数学知识题，本题涉及到异或的多种性质，详情见链接
+
+[异或性质][题解：CF2225D Exceptional Segments - 洛谷专栏](https://www.luogu.com.cn/article/i87rgz8p)<br>
+
+下为本人复述异或性质的推理
+
+**连续整数异或和的周期性**见本人另一个知识点.md
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+const int N = 2e5+5;
+const int MOD =  998244353;
+
+int t;
+
+void clear() {
+
+}
+
+int count_rem(int limit, int rem) {
+	if (limit < rem) return 0;
+	return (limit - rem) / 4 + 1;
+}
+
+void solve() {
+	int n, x;
+	cin >> n >> x;
+
+	int a0 = count_rem(x - 1, 3) + 1;
+	int r0 = count_rem(n, 3) - count_rem(x - 1, 3);
+
+	int a1 = count_rem(x - 1, 1);
+	int r1 = count_rem(n, 1) - count_rem(x - 1, 1);
+
+	int ans = 0;
+	ans = (ans + (a0 % MOD) * (r0 % MOD)) % MOD;
+	ans = (ans + (a1 % MOD) * (r1 % MOD)) % MOD;
+
+	cout << ans << "\n";
+}
+
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin >> t;
+	while (t--) {
+		clear();
 		solve();
 	}
 	return 0;
