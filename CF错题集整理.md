@@ -874,3 +874,123 @@ signed main() {
 }
 ```
 
+
+
+## CF799 错题解析
+
+### ***H. Gambling***
+
+本题需要用到一些dp，但是我觉得纯模拟想出来的哈希也不错，学会了map可以往里存数组并且实际应用了，本题思路也可借鉴，即求最大字段和，运用贪心，当选择这个坐标的时候如果代价太大就不要了详情见两种代码以及题解
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+const int N = 3e5+10;
+
+int test;
+int n;
+
+void clear() {
+
+}
+
+
+void solve() {
+	cin >> n;
+	map<int, vector<int> > mp;
+	vector<int> a(n);
+	for (int i = 0; i < n; i++) {
+		cin >> a[i];
+		mp[a[i]].push_back(i);
+	}
+	int ansl = 0, ansr = 0, ans_a = a[0];
+	int sum = 1;
+	int lst;
+	int l, x;
+	int ans = 1;
+	for (auto i = mp.begin(); i != mp.end(); i++) {
+		sum = 1;
+		lst = l = (i->second)[0];
+		x = i->first;
+		int len = (i->second).size();
+		for (int j = 1; j < len; j++) {
+			int y = (i->second)[j];
+			sum -= (y - lst - 2);
+			if (sum <= 0) {
+				sum = 1;
+				l = y;
+			}
+			if (sum > ans) {
+				ansl = l;
+				ansr = y;
+				ans = sum;
+				ans_a = x;
+			}
+			lst = y;
+		}
+
+	}
+	cout << ans_a  << " " << ansl + 1 << " " << ansr + 1 << '\n';
+
+}
+
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin >> test;
+	while (test--) {
+		clear();
+
+		solve();
+
+	}
+	return 0;
+}
+```
+
+以及dp题解太牛逼了
+
+[dp题解](https://www.luogu.com.cn/article/or1i9xlb)
+
+本人认为此题解中用数组储存上一个坐标的点值得深思
+
+```cpp
+//CF1692H
+#include <cstdio>
+#include <map>
+using namespace std;
+
+const int N = 2e5 + 10;
+int t, n, x[N], ls[N], f[N], l[N];
+
+int main(){
+	scanf("%d", &t);
+	while(t--){
+		scanf("%d", &n);
+		map<int, int> mp;
+		for(int i = 1; i <= n; ++ i){
+			scanf("%d", &x[i]);
+			ls[i] = mp[x[i]];
+			mp[x[i]] = i;
+		}
+		int ans = 0, pos;
+		for(int i = 1; i <= n; ++ i){
+			if(f[ls[i]] - (i-ls[i]-1) > 0){
+				f[i] = f[ls[i]] - (i-ls[i]-1) + 1;
+				l[i] = l[ls[i]];
+			} else {
+				f[i] = 1;
+				l[i] = i;
+			}
+			if(f[i] > ans){
+				ans = f[i]; pos = i; 
+			}
+		}
+		printf("%d %d %d\n", x[pos], l[pos], pos);
+	}
+}
+
+```
+
