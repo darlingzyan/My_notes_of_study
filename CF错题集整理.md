@@ -994,3 +994,197 @@ int main(){
 
 ```
 
+
+
+## **CF1076 错题解析**
+
+### **D. The Robotic Rush**
+
+本题学到思路**如何处理高频的全局覆盖与单点修改**
+
+本题用了一个全局的时间戳代表修改的版本
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+#define PII pair<int,int>
+#define fi first
+#define se second
+using namespace std;
+const int N = 2e4+10;
+
+void solve() {
+	int n, m, h;
+	cin >> n >> m >> h;
+
+	vector<int> a(n + 1, 0);
+	for (int i = 1; i <= n; i++) {
+		cin >> a[i];
+	}
+
+	vector<int> d(n + 1, 0);
+	vector<int> e = a;
+
+	int last_change = 0;
+	for (int i = 0; i < m; i++) {
+		int b, c;
+		cin >> b >> c;
+
+		if (d[b] < last_change) {
+			a[b] = e[b];
+			d[b] = last_change;
+		}
+		if (a[b] + c <= h) {
+			a[b] += c;
+		} else {
+			last_change = i;
+		}
+	}
+
+	for (int i = 1; i <= n; i++) {
+		if (d[i] < last_change) {
+			cout << e[i] << " ";
+		} else cout << a[i] << " ";
+	}
+	cout << '\n';
+}
+
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	int test = 1;
+	cin >> test;
+	while (test--) {
+		solve();
+	}
+	return 0;
+}
+```
+
+
+
+### **E. The Robotic Rush**
+
+本题考察知识颇多，考察了二维偏分以及树状数组以及离散化，我感觉忒爽，看代码
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+#define PII pair<int,int>
+#define fi first
+#define se second
+using namespace std;
+const int N = 2e4+10;
+
+struct BIT {
+	int n;
+	vector<int> tree;
+	BIT(int n) : n(n), tree(n + 1, 0) {}
+
+	int lowbit(int x) {
+		return x & (-x);
+	}
+
+	void add(int x, int y) {
+		for (; x <= n; x += lowbit(x)) tree[x] += y;
+	}
+
+	int ask(int x) {
+		int res = 0;
+		for (; x; x -= lowbit(x)) res += tree[x];
+		return res;
+	}
+};
+
+struct ROBOT {
+	int dl, dr;
+	bool operator<(const ROBOT &other)const {
+		return dl < other.dl;
+	}
+};
+
+
+void solve() {
+	int n, m, k;
+	cin >> n >> m >> k;
+	vector<int> a(n), b(m);
+	for (int i = 0; i < n; i++) cin >> a[i];
+	for (int i = 0; i < m; i++) cin >> b[i];
+
+	string s;
+	cin >> s;
+
+	sort(b.begin(), b.end());
+
+	vector<ROBOT> robots(n);
+	vector<int> vals;
+
+	for (int i = 0; i < n; i++) {
+		int pos = a[i];
+		int dl = 2e18;
+		int dr = 2e18;
+
+		auto it = lower_bound(b.begin(), b.end(), pos);
+		if (it != b.end()) {
+			dr = *it - pos;
+		}
+		if (it != b.begin()) {
+			dl = pos - *prev(it);
+		}
+
+		robots[i] = {dl, dr};
+		vals.push_back(dr);
+	}
+
+	sort(vals.begin(), vals.end());
+	vals.erase(unique(vals.begin(), vals.end()), vals.end());
+
+	BIT bit(vals.size());
+
+	for (int i = 0; i < n; i++) {
+		int r = lower_bound(vals.begin(), vals.end(), robots[i].dr) - vals.begin() + 1;
+		bit.add(r, 1);
+	}
+
+	sort(robots.begin(), robots.end());
+
+	int ptr = 0;
+	int max_l = 0;
+	int max_r = 0;
+	int cur_pos = 0;
+
+	for (int i = 0; i < k; i++) {
+		if (s[i] == 'L') cur_pos--;
+		else cur_pos++;
+
+		max_l = max(max_l, -cur_pos);
+		max_r = max(max_r, cur_pos);
+
+		while (ptr < n && robots[ptr].dl <= max_l) {
+			int r = lower_bound(vals.begin(), vals.end(), robots[ptr].dr) - vals.begin() + 1;
+			bit.add(r, -1);
+			ptr++;
+		}
+
+		int r_y = upper_bound(vals.begin(), vals.end(), max_r) - vals.begin() + 1;
+		int alive = bit.ask(vals.size()) - bit.ask(r_y - 1);
+
+		cout << alive << " ";
+	}
+	cout << '\n';
+}
+
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	int test = 1;
+	cin >> test;
+	while (test--) {
+		solve();
+	}
+	return 0;
+}
+```
+
