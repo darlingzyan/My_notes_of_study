@@ -1,1190 +1,256 @@
-# CF错题集整理
+# 🏆 CF 与牛客错题/神题集锦
 
-## CF1090 错题解析
+## 1. CF1090D The 67th OEIS Problem
+**🏷️ 核心标签**：`数论`、`素数筛`、`构造`
 
-*  D. The 67th OEIS Problem
+> **📝 题意简述**：
+> 需要构造一个数组，保证任意一对数的 $\gcd(a,b)$ 值互不相同。
 
-  首先观察题面要找到**gcd(a,b)**的不同值，我们不妨用素数来确定所有**gcd(a,b)**<br>
-
-  则只需要让素数两两相乘即可<br>
-
-  ```cpp
-  #include<bits/stdc++.h>
-  #define int long long
-  using namespace std;
-  const int N = 10000005;
-  int v[N], prime[N];
-  int m, n, t;
-  void primes(int n) {
-  	memset(v, 0, sizeof(v));
-  	m = 0;
-  	for (int i = 2; i <= n; i++) {
-  		if (!v[i]) {
-  			v[i] = i;
-  			prime[++m] = i;
-  		}
-  		for (int j = 1; j <= m; j++) {
-  			if (prime[j] > v[i] || prime[j] > n / i) {
-  				break;
-  			}
-  			v[i * prime[j]] = prime[j];
-  		}
-  	}
-  }
-  
-  void solve() {
-  	for (int i = 1; i <= n; i++) {
-  		cout << prime[i - 1]*prime[i] << " ";
-  	}
-  	cout << '\n';
-  }
-  
-  signed main() {
-  	ios::sync_with_stdio(0);
-  	cin.tie(0);
-  	cout.tie(0);
-  	cin >> t;
-  	primes(10000000);
-  	prime[0] = 1;
-  	while (t--) {
-  		cin >> n;
-  		solve();
-  	}
-  	return 0;
-  }
-  ```
-
-  
-
-个人新学习该代码模板我感觉更简洁更好看<br>
-
-* E. The 67th XOR Problem<br>
-
-  根据题意我们需要了解以下异或运算的性质
-
-  * 异或交换律     **a^b=b^a**
-  * 异或结合律     **a^b^c=a^(b^c)**
-  * 自反性             **a^a=0**
-  * 零值                 **a^0=a**<br>
-
-  结合以上规律我们不妨对题意解读  每次选一个值进行全数组异或，但我们分析一个规律<br>
-
-  ***{a,b,c}*** 我们选择拿出c异或即<br>
-
-  **{a^c,b^c}**进一步可以推导出**ans = (a^c)^(b^c)  = a^b^c^c = a^b^0 = a^b**<br>
-
-  
-  $$
-  \large综上所述是不是无论拿什么进行异或最后都是两个数进行异或，所以我们只需要选择两个数异或最大值即可\\
-  
-  \large我们采用暴力枚举即时间复杂度O(n^2)
-  $$
-  
-
-  代码如下：
-
-  ```cpp
-  #include<bits/stdc++.h>
-  using namespace std;
-  int main() {
-  	int t;
-  	cin >> t;
-  	while (t--) {
-  		int n;
-  		cin >> n;
-  		vector<int> nums;
-  		for (int i = 0; i < n; i++) {
-  			int num;
-  			cin >> num;
-  			nums.push_back(num);
-  		}
-  		int ans = -1e9;
-  		for (int i = 0; i < n; i++) {
-  			for (int j = 0; j < n; j++) {
-  				ans = max(ans, nums[i] ^ nums[j]);
-  			}
-  		}
-  		cout << ans << endl;
-  	}
-  	return 0;
-  }
-  ```
-## CF784 错题解析
-
-* D. Colorful Stamp
-
-  由样例分情况讨论发现只要**W前面B和R都存在**，不管BR各自有多少个都可以实现
-
-  又联想到 **异或** 正好符合BR要求，此题得解，不用纠结于数量问题，第一次掉进了奇数偶数的坑，第二次纠结了1的坑，要多想
-
-  以下为代码实现
-
-  ```cpp
-  #include<bits/stdc++.h>
-  #define int long long
-  using namespace std;
-  int t;
-  int n;
-  string s;
-  
-  void clear() {
-  	s = "";
-  }
-  
-  void solve() {
-  	int len = s.size();
-  	bool flag = false;
-  	int flagr = 0;
-  	int flagb = 0;
-  	for (int i = 0; i < len; i++) {
-  		if (s[i] == 'B') {
-  			flagb = 1;
-  		} else if (s[i] == 'R') {
-  			flagr = 1;
-  		} else {
-  			if ((flagb ^ flagr) == 1) {
-  				flag = true;
-  			}
-  			flagb = 0;
-  			flagr = 0;
-  		}
-  	}
-  	if ((flagb ^ flagr) == 1) {
-  		flag = true;
-  	}
-  	if (!flag) cout << "yes\n";
-  	else cout << "no\n";
-  }
-  
-  signed main() {
-  	ios::sync_with_stdio(0);
-  	cin.tie(0);
-  	cout.tie(0);
-  	cin >> t;
-  	while (t--) {
-  
-  		clear();
-  
-  		cin >> n;
-  		cin.ignore();
-  		for (int i = 0; i < n; i++) {
-  			char ch;
-  			cin >> ch;
-  			s += ch;
-  		}
-  
-  		solve();
-  	}
-  	return 0;
-  }
-  ```
-
-  
-
-* F. Eating Candies
-
-  经典的一道双指针问题，多画图考虑双指针范围，可以直接通过双指针确认吃了多少个糖果的！
-
-  代码如下
-
-  ```cpp
-  #include<bits/stdc++.h>
-  #define int long long
-  using namespace std;
-  int t;
-  int n;
-  vector<int> nums;
-  
-  void clear() {
-  	nums.clear();
-  }
-  
-  void solve() {
-  	int n = (int)nums.size();
-  	int l = 0, r = n - 1;
-  	long long suml = 0, sumr = 0;
-  	int ans = 0;
-  
-  	while (l <= r) {
-  		if (suml == sumr) {
-  			ans = max(ans, l + (n - 1 - r));
-  		}
-  		if (suml <= sumr) {
-  			suml += nums[l++];
-  		} else {
-  			sumr += nums[r--];
-  		}
-  	}
-  	if (suml == sumr) {
-  		ans = max(ans, l + (n - 1 - r));
-  	}
-  	cout << ans << '\n';
-  }
-  
-  signed main() {
-  	ios::sync_with_stdio(0);
-  	cin.tie(0);
-  	cout.tie(0);
-  	cin >> t;
-  	while (t--) {
-  		clear();
-  
-  		cin >> n;
-  		for (int i = 0; i < n; i++) {
-  			int num;
-  			cin >> num;
-  			nums.push_back(num);
-  		}
-  
-  		solve();
-  	}
-  	return 0;
-  }
-  ```
-
-  
-  
-  
-  
-  
-  
-
-## ***CF790 错题解析***
-
-#### ***D. X-Sum***
-
-本题偏简单，本题要求求出所在格子斜线的最长距离，但数据给的范围支持暴力，以下是暴力解法，但本人在vp时候并没有a出来，因为有一个字母看错了，希望下次仔细检查<br>
-
-以下是暴力代码:
-
+### ☠️ 我的死因
+- 没有敏锐地把 $\gcd$ 互不相同与“素数的唯一分解定理”联系起来。
+### 💡 核心破局点
+**“用素数作为基因进行两两相乘！”**
+让数组的每一个元素都由两个相邻的素数相乘得到（如 $P_{i-1} \times P_i$）。这样任意两个数提取公因数时，绝对不会出现重复的组合。
+### 💻 核心代码实现
 ```cpp
-#include<bits/stdc++.h>
-#define int long long
-using namespace std;
-
-int t, n, m;
-int tu[205][205];
-
-void clear() {
-	memset(tu, 0, sizeof(tu));
-}
-
-void solve() {
-	int ans = 0;
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			int sum = tu[i][j];
-			for (int k = 1; i - k >= 0 && j - k >= 0; k++) {
-				sum = sum + tu[i - k][j - k];
-			}
-			for (int k = 1; (i - k) >= 0 && (j + k) < m; k++) {
-				sum += tu[i - k][j + k];
-			}
-			for (int k = 1; (i + k) < n && (j - k >= 0); k++) {
-				sum += tu[i + k][j - k];
-			}
-			for (int k = 1; (i + k < n) && (j + k) < m; k++) {
-				sum += tu[i + k][j + k];
-			}
-			ans = max(ans, sum);
-		}
-	}
-	cout << ans << '\n';
-}
-
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> t;
-	cin.ignore();
-	while (t--) {
-		clear();
-
-		cin >> n >> m;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				cin >> tu[i][j];
-			}
-		}
-
-		solve();
-	}
-	return 0;
-}
-```
-
-
-
-* 但当数据范围大时必定超时，所以通过题解发现分为两种对角线，两种对角线都有规律<br>
-
-  参考**题解**如下：
-
-  [题解][CF1676D X-sum - 洛谷专栏](https://www.luogu.com.cn/article/lznb4tio)
-
-  自行实现代码如下
-
-  #### ***Code***
-
-  ```cpp
-  #include<bits/stdc++.h>
-  #define int long long
-  using namespace std;
-  
-  int t, n, m;
-  int tu [205][205];
-  int l[550];
-  int r[550];
-  
-  void clear() {
-  	memset(tu,0,sizeof(tu));
-  	memset(l,0,sizeof(l));
-  	memset(r,0,sizeof(r));
-  }
-  
-  void solve() {
-  	int ans = 0;
-  	for(int i=0;i<n;i++){
-  		for(int j=0;j<m;j++){
-  			if(ans<l[i+j]+r[i-j+m]-tu[i][j]){
-  				ans = l[i+j]+r[i-j+m]-tu[i][j];
-  			}
-  		}
-  	}
-  	cout<<ans<<'\n';
-  }
-  
-  
-  signed main() {
-  	ios::sync_with_stdio(0);
-  	cin.tie(0);
-  	cout.tie(0);
-  	cin >> t;
-  	cin.ignore();
-  	while (t--) {
-  		clear();
-  
-  		cin>>n>>m;
-  		for(int i=0;i<n;i++){
-  			for(int j=0;j<m;j++){
-  				cin>>tu[i][j];
-  				l[i+j]+=tu[i][j];
-  				r[i-j+m]+=tu[i][j];
-  			}
-  		}
-  		solve();
-  	}
-  	return 0;
-  }
-  ```
-
-  ###   ***E. Eating Queries***
-
-  本题题意就是**给定一个k看看能不能在数组里选尽可能少的数加起来>=k**<br>
-
-  本人认为自己错在了构建代码的能力上，思路并没有问题，但是想的是纯暴力运用贪心从大到小排序一点点来，会超时<br>
-
-  ***Code***
-
-  ```cpp
-  #include<bits/stdc++.h>
-  #define int long long
-  using namespace std;
-  
-  int t, n, q;
-  vector<int> nums;
-  bool cmp(const int &a, const int &b) {
-  	return a > b;
-  }
-  
-  void clear() {
-  	nums.clear();
-  }
-  
-  void solve() {
-  	sort(nums.begin(), nums.end(), cmp);
-  	while (q--) {
-  		int ans = 0;
-  		int num;
-  		cin >> num;
-  		int len = nums.size();
-  		int sum = 0;
-  		bool flag = false;
-  		for (int i = 0; i < len; i++) {
-  			sum += nums[i];
-  			ans++;
-  			if (sum >= num) {
-  				flag = true;
-  				break;
-  			}
-  		}
-  		if (!flag) cout << -1 << '\n';
-  		else cout << ans << '\n';
-  	}
-  }
-  
-  
-  signed main() {
-  	ios::sync_with_stdio(0);
-  	cin.tie(0);
-  	cout.tie(0);
-  	cin >> t;
-  	cin.ignore();
-  	while (t--) {
-  		clear();
-  
-  		cin >> n >> q;
-  		for (int i = 0; i < n; i++) {
-  			int num;
-  			cin >> num;
-  			nums.push_back(num);
-  		}
-  
-  		solve();
-  	}
-  	return 0;
-  }
-  ```
-
-  
-
-  
-
-题解优化思路，因为序列是单调递增的，且答案具有单调性，如果和过大一定成功，如果和不够一定失败，可以采用二分优化代码
-
-***Code***
-
-```cpp
-#include<bits/stdc++.h>
-#define int long long
-using namespace std;
-
-const int N = 1e5+5e4+5;
-
-int t, n, q;
-vector<int> nums;
-int pre[N];
-bool cmp(const int &a, const int &b) {
-	return a > b;
-}
-
-void clear() {
-	nums.clear();
-	memset(pre, 0, sizeof(pre));
-}
-
-
-void solve() {
-	sort(nums.begin(), nums.end(), cmp);
-	pre[1] = nums[0];
+const int N = 10000005;
+int v[N], prime[N], m;
+void primes(int n) {
 	for (int i = 2; i <= n; i++) {
-		pre[i] = pre[i - 1] + nums[i - 1];
-	}
-	while (q--) {
-		int num;
-		cin >> num;
-		auto ans = lower_bound(pre + 1, pre + n + 1, num) - pre;
-		if (ans == n + 1) cout << -1 << '\n';
-		else cout << ans << '\n';
-
-	}
-}
-
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> t;
-	cin.ignore();
-	while (t--) {
-		clear();
-
-		cin >> n >> q;
-		for (int i = 0; i < n; i++) {
-			int num;
-			cin >> num;
-			nums.push_back(num);
-		}
-
-		solve();
-	}
-	return 0;
-}
-```
-
-
-
-### ***F. Longest Strike***
-
-这道题题意大概可以理解为找最长出现次数均大于K次的连续子序列<br>
-
-**<font color="red"> 而且我发现如果没确定的把握最好是使用map因为他很稳定</font>**
-
-***Code***
-
-```cpp
-#include<bits/stdc++.h>
-#define int long long
-using namespace std;
-
-const int N = 1e5+5e4+5;
-
-int t, n, k;
-vector<int> nums;
-map<int, int> mp;
-int max_emerge = 0;
-
-void clear() {
-	nums.clear();
-	mp.clear();
-	max_emerge = 0;
-}
-
-
-void solve() {
-	if (max_emerge < k) {
-		cout << -1 << '\n';
-		return;
-	}
-	vector<int> satisfy;
-	for (auto &it : mp) {
-		if (it.second >= k) {
-			satisfy.push_back(it.first);
+		if (!v[i]) { v[i] = i; prime[++m] = i; }
+		for (int j = 1; j <= m; j++) {
+			if (prime[j] > v[i] || prime[j] > n / i) break;
+			v[i * prime[j]] = prime[j];
 		}
 	}
-	sort(satisfy.begin(), satisfy.end());
-	int len = satisfy.size() ;
-	int l = satisfy[0];
-	int r  = satisfy[0];
-	int ansl = l, ansr = r;
-	int maxn = 0;
-	if (len >= 2) {
-		for (int i = 1; i < len; i++) {
-			if (satisfy[i] == satisfy[i - 1] + 1) {
-				r = satisfy[i];
-			} else {
-				if (maxn < r - l) {
-					maxn = r - l;
-					ansl = l;
-					ansr = r;
-				}
-				l = satisfy[i];
-				r = satisfy[i];
-			}
-		}
-	}
-	if (r - l > maxn) {
-		ansl = l;
-		ansr = r;
-	}
-	cout << ansl << " " << ansr << '\n';
-}
-
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> t;
-	cin.ignore();
-	while (t--) {
-		clear();
-
-		cin >> n >> k;
-		for (int i = 0; i < n; i++) {
-			int num;
-			cin >> num;
-			nums.push_back(num);
-			mp[num]++;
-			max_emerge = max(mp[num], max_emerge);
-		}
-
-		solve();
-	}
-	return 0;
-}
-```
-
-***Cursor 给了优化答案***
-
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#define int long long
-using namespace std;
-
-int t, n, k;
-vector<int> nums;
-
-void solve() {
-	vector<int> satisfy;
-	sort(nums.begin(), nums.end());
-
-	for (int i = 0; i < n; ) {
-		int j = i;
-		while (j < n && nums[j] == nums[i]) j++;
-		if (j - i >= k) satisfy.push_back(nums[i]);
-		i = j;
-	}
-	if (satisfy.empty()) {
-		cout << -1 << '\n';
-		return;
-	}
-
-	int l = satisfy[0], r = satisfy[0];
-	int ansl = l, ansr = r;
-	int maxn = 0;
-	int len = (int)satisfy.size();
-
-	for (int i = 1; i < len; i++) {
-		if (satisfy[i] == satisfy[i - 1] + 1) {
-			r = satisfy[i];
-		} else {
-			if (r - l > maxn) {
-				maxn = r - l;
-				ansl = l;
-				ansr = r;
-			}
-			l = satisfy[i];
-			r = satisfy[i];
-		}
-	}
-
-	// 别漏掉最后一段连续区间
-	if (r - l > maxn) {
-		ansl = l;
-		ansr = r;
-	}
-
-	cout << ansl << " " << ansr << '\n';
-}
-
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> t;
-	while (t--) {
-		nums.clear();
-		cin >> n >> k;
-		for (int i = 0; i < n; i++) {
-			int num;
-			cin >> num;
-			nums.push_back(num);
-		}
-		solve();
-	}
-	return 0;
-}
-```
-
-### ***H2. Maximum Crossings (Hard Version)***
-
-由题意得本题就是求逆序对，本人刚想的是归并排序求逆序对，在bilibili学到了新知识叫树状数组
-
-***Code***
-
-```cpp
-#include <bits/stdc++.h>
-#define int long long
-using namespace std;
-
-int a[200005];
-int test, n, ans;
-int f[200005];
-
-void clear() {
-	memset(a, 0, sizeof(a));
-	ans = 0;
-	memset(f, 0, sizeof(f));
-}
-
-void add(int x, int y) {
-	for (; x <= n; x += x & (-x)) f[x] += y;
-}
-
-int ask(int x) {
-	int res = 0;
-	for (; x; x -= x & (-x)) {
-		res += f[x];
-	}
-	return res;
 }
 void solve() {
-	for (int i = n; i; i--) {
-		ans += ask(a[i]);
-		add(a[i], 1);
-	}
-	cout << ans << '\n';
-
-}
-signed main() {
-	cin >> test;
-	while (test--) {
-		clear();
-
-		cin >> n;
-		for (int i = 1; i <= n; i++) {
-			cin >> a[i];
-		}
-
-		solve();
-
-	}
-}
-```
-
-##### **<font color="red"> 建议大家多考虑前缀和因为我想起来这玩意用处蛮大的</font>**
-
-
-
-## [Educational Codeforces Round 189 (Rated for Div. 2)](https://codeforces.com/contest/2225) 错题解析
-
-
-
-### ***C. Red-Black Pairs***
-
-典型的dp板子题，但是本人好久不做忘了很多，需要补充一些dp板子知识，当前面情况已经模拟好后，不难发现要么竖着统计要么两行横着统计
-
-***Code***
-
-```cpp
-#include<bits/stdc++.h>
-#define int long long
-using namespace std;
-
-const int N = 2e5+5;
-
-int t;
-string s1, s2;
-int n;
-int dp[N];
-
-void clear() {
-	s1 = "";
-	s2 = "";
-}
-
-
-void solve() {
-	memset(dp, 0x3f3f3f3f, sizeof(dp));
-	dp[n] = 0;
-	for (int i = n - 1; i >= 0; i--) {
-		int v = 0;
-		if (s1[i] != s2[i]) v = 1;
-		dp[i] = min(dp[i], v + dp[i + 1]);
-		if (i < n - 1) {
-			int h = 0;
-			if (s1[i] != s1[i + 1]) h += 1;
-			if (s2[i] != s2[i + 1]) h += 1;
-			dp[i] = min(dp[i], h + dp[i + 2]);
-		}
-	}
-	cout << dp[0] << '\n';
-}
-
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> t;
-	cin.ignore();
-	while (t--) {
-		clear();
-		cin >> n;
-		for (int i = 0; i < n; i++) {
-			char ch;
-			cin >> ch;
-			s1 += ch;
-		}
-		cin.ignore();
-		for (int i = 0; i < n; i++) {
-			char ch;
-			cin >> ch;
-			s2 += ch;
-		}
-
-		solve();
-	}
-	return 0;
-}
-```
-
-### ***D. Exceptional Segments***
-
-数学知识题，本题涉及到异或的多种性质，详情见链接
-
-[异或性质][题解：CF2225D Exceptional Segments - 洛谷专栏](https://www.luogu.com.cn/article/i87rgz8p)<br>
-
-下为本人复述异或性质的推理
-
-**连续整数异或和的周期性**见本人另一个知识点.md
-
-```cpp
-#include <bits/stdc++.h>
-#define int long long
-using namespace std;
-
-const int N = 2e5+5;
-const int MOD =  998244353;
-
-int t;
-
-void clear() {
-
-}
-
-int count_rem(int limit, int rem) {
-	if (limit < rem) return 0;
-	return (limit - rem) / 4 + 1;
-}
-
-void solve() {
-	int n, x;
-	cin >> n >> x;
-
-	int a0 = count_rem(x - 1, 3) + 1;
-	int r0 = count_rem(n, 3) - count_rem(x - 1, 3);
-
-	int a1 = count_rem(x - 1, 1);
-	int r1 = count_rem(n, 1) - count_rem(x - 1, 1);
-
-	int ans = 0;
-	ans = (ans + (a0 % MOD) * (r0 % MOD)) % MOD;
-	ans = (ans + (a1 % MOD) * (r1 % MOD)) % MOD;
-
-	cout << ans << "\n";
-}
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> t;
-	while (t--) {
-		clear();
-		solve();
-	}
-	return 0;
-}
-```
-
-
-
-## CF799 错题解析
-
-### ***H. Gambling***
-
-本题需要用到一些dp，但是我觉得纯模拟想出来的哈希也不错，学会了map可以往里存数组并且实际应用了，本题思路也可借鉴，即求最大字段和，运用贪心，当选择这个坐标的时候如果代价太大就不要了详情见两种代码以及题解
-
-```cpp
-#include <bits/stdc++.h>
-#define int long long
-using namespace std;
-const int N = 3e5+10;
-
-int test;
-int n;
-
-void clear() {
-
-}
-
-
-void solve() {
-	cin >> n;
-	map<int, vector<int> > mp;
-	vector<int> a(n);
-	for (int i = 0; i < n; i++) {
-		cin >> a[i];
-		mp[a[i]].push_back(i);
-	}
-	int ansl = 0, ansr = 0, ans_a = a[0];
-	int sum = 1;
-	int lst;
-	int l, x;
-	int ans = 1;
-	for (auto i = mp.begin(); i != mp.end(); i++) {
-		sum = 1;
-		lst = l = (i->second)[0];
-		x = i->first;
-		int len = (i->second).size();
-		for (int j = 1; j < len; j++) {
-			int y = (i->second)[j];
-			sum -= (y - lst - 2);
-			if (sum <= 0) {
-				sum = 1;
-				l = y;
-			}
-			if (sum > ans) {
-				ansl = l;
-				ansr = y;
-				ans = sum;
-				ans_a = x;
-			}
-			lst = y;
-		}
-
-	}
-	cout << ans_a  << " " << ansl + 1 << " " << ansr + 1 << '\n';
-
-}
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cin >> test;
-	while (test--) {
-		clear();
-
-		solve();
-
-	}
-	return 0;
-}
-```
-
-以及dp题解太牛逼了
-
-[dp题解](https://www.luogu.com.cn/article/or1i9xlb)
-
-本人认为此题解中用数组储存上一个坐标的点值得深思
-
-```cpp
-//CF1692H
-#include <cstdio>
-#include <map>
-using namespace std;
-
-const int N = 2e5 + 10;
-int t, n, x[N], ls[N], f[N], l[N];
-
-int main(){
-	scanf("%d", &t);
-	while(t--){
-		scanf("%d", &n);
-		map<int, int> mp;
-		for(int i = 1; i <= n; ++ i){
-			scanf("%d", &x[i]);
-			ls[i] = mp[x[i]];
-			mp[x[i]] = i;
-		}
-		int ans = 0, pos;
-		for(int i = 1; i <= n; ++ i){
-			if(f[ls[i]] - (i-ls[i]-1) > 0){
-				f[i] = f[ls[i]] - (i-ls[i]-1) + 1;
-				l[i] = l[ls[i]];
-			} else {
-				f[i] = 1;
-				l[i] = i;
-			}
-			if(f[i] > ans){
-				ans = f[i]; pos = i; 
-			}
-		}
-		printf("%d %d %d\n", x[pos], l[pos], pos);
-	}
-}
-
-```
-
-
-
-## **CF1076 错题解析**
-
-### **D. The Robotic Rush**
-
-本题学到思路**如何处理高频的全局覆盖与单点修改**
-
-本题用了一个全局的时间戳代表修改的版本
-
-```cpp
-#include <bits/stdc++.h>
-#define int long long
-#define PII pair<int,int>
-#define fi first
-#define se second
-using namespace std;
-const int N = 2e4+10;
-
-void solve() {
-	int n, m, h;
-	cin >> n >> m >> h;
-
-	vector<int> a(n + 1, 0);
-	for (int i = 1; i <= n; i++) {
-		cin >> a[i];
-	}
-
-	vector<int> d(n + 1, 0);
-	vector<int> e = a;
-
-	int last_change = 0;
-	for (int i = 0; i < m; i++) {
-		int b, c;
-		cin >> b >> c;
-
-		if (d[b] < last_change) {
-			a[b] = e[b];
-			d[b] = last_change;
-		}
-		if (a[b] + c <= h) {
-			a[b] += c;
-		} else {
-			last_change = i;
-		}
-	}
-
-	for (int i = 1; i <= n; i++) {
-		if (d[i] < last_change) {
-			cout << e[i] << " ";
-		} else cout << a[i] << " ";
-	}
+	for (int i = 1; i <= n; i++) cout << prime[i - 1] * prime[i] << " ";
 	cout << '\n';
 }
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	int test = 1;
-	cin >> test;
-	while (test--) {
-		solve();
-	}
-	return 0;
-}
 ```
 
+---
 
+## 2. CF1090E The 67th XOR Problem
+**🏷️ 核心标签**：`位运算`、`异或性质`、`思维降维`
 
-### **E. The Robotic Rush**
+> **📝 题意简述**：
+> 每次可以选一个数去异或全数组，可以操作无数次，求最后数组中任意两数异或的最大值。
 
-本题考察知识颇多，考察了二维偏分以及树状数组以及离散化，我感觉忒爽，看代码
-
+### ☠️ 我的死因
+- 以为操作会改变数组的本质，想去模拟各种操作后的结果。
+### 💡 核心破局点
+**“全局异或操作，对相对异或差值无效！”**
+根据异或的自反性，假设拿 $c$ 异或全局，任意两个数变成了 $a \oplus c$ 和 $b \oplus c$。
+此时我们求它们的异或值：$(a \oplus c) \oplus (b \oplus c) = a \oplus b \oplus c \oplus c = a \oplus b$。
+**结论**：无论你怎么全盘异或，最后两个数的异或值**永远等于初始数组里这两个数的异或值**！直接 $O(N^2)$ 暴力找原数组最大异或对即可。
+### 💻 核心代码实现
 ```cpp
-#include <bits/stdc++.h>
-#define int long long
-#define PII pair<int,int>
-#define fi first
-#define se second
-using namespace std;
-const int N = 2e4+10;
-
-struct BIT {
-	int n;
-	vector<int> tree;
-	BIT(int n) : n(n), tree(n + 1, 0) {}
-
-	int lowbit(int x) {
-		return x & (-x);
-	}
-
-	void add(int x, int y) {
-		for (; x <= n; x += lowbit(x)) tree[x] += y;
-	}
-
-	int ask(int x) {
-		int res = 0;
-		for (; x; x -= lowbit(x)) res += tree[x];
-		return res;
-	}
-};
-
-struct ROBOT {
-	int dl, dr;
-	bool operator<(const ROBOT &other)const {
-		return dl < other.dl;
-	}
-};
-
-
 void solve() {
-	int n, m, k;
-	cin >> n >> m >> k;
-	vector<int> a(n), b(m);
-	for (int i = 0; i < n; i++) cin >> a[i];
-	for (int i = 0; i < m; i++) cin >> b[i];
-
-	string s;
-	cin >> s;
-
-	sort(b.begin(), b.end());
-
-	vector<ROBOT> robots(n);
-	vector<int> vals;
-
-	for (int i = 0; i < n; i++) {
-		int pos = a[i];
-		int dl = 2e18;
-		int dr = 2e18;
-
-		auto it = lower_bound(b.begin(), b.end(), pos);
-		if (it != b.end()) {
-			dr = *it - pos;
-		}
-		if (it != b.begin()) {
-			dl = pos - *prev(it);
-		}
-
-		robots[i] = {dl, dr};
-		vals.push_back(dr);
-	}
-
-	sort(vals.begin(), vals.end());
-	vals.erase(unique(vals.begin(), vals.end()), vals.end());
-
-	BIT bit(vals.size());
-
-	for (int i = 0; i < n; i++) {
-		int r = lower_bound(vals.begin(), vals.end(), robots[i].dr) - vals.begin() + 1;
-		bit.add(r, 1);
-	}
-
-	sort(robots.begin(), robots.end());
-
-	int ptr = 0;
-	int max_l = 0;
-	int max_r = 0;
-	int cur_pos = 0;
-
-	for (int i = 0; i < k; i++) {
-		if (s[i] == 'L') cur_pos--;
-		else cur_pos++;
-
-		max_l = max(max_l, -cur_pos);
-		max_r = max(max_r, cur_pos);
-
-		while (ptr < n && robots[ptr].dl <= max_l) {
-			int r = lower_bound(vals.begin(), vals.end(), robots[ptr].dr) - vals.begin() + 1;
-			bit.add(r, -1);
-			ptr++;
-		}
-
-		int r_y = upper_bound(vals.begin(), vals.end(), max_r) - vals.begin() + 1;
-		int alive = bit.ask(vals.size()) - bit.ask(r_y - 1);
-
-		cout << alive << " ";
-	}
-	cout << '\n';
-}
-
-signed main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	int test = 1;
-	cin >> test;
-	while (test--) {
-		solve();
-	}
-	return 0;
+    int ans = -1e9;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            ans = max(ans, nums[i] ^ nums[j]);
+        }
+    }
+    cout << ans << endl;
 }
 ```
 
+---
+
+## 3. CF784D Colorful Stamp
+**🏷️ 核心标签**：`字符串`、`逻辑模拟`、`异或巧用`
+
+> **📝 题意简述**：
+> 给定目标字符串（只含W, B, R），印章每次只能同时盖 B 和 R，问能否用印章盖出目标串。
+
+### ☠️ 我的死因
+- 第一次掉进了奇数偶数的坑，第二次又去纠结 B 和 R 的具体数量配比。
+### 💡 核心破局点
+**“W 就是墙，段落内只需有 B 也有 R 即可！”**
+因为印章是 BR，所以只要一段连续的非 W 字符里同时存在至少一个 B 和一个 R，不管它们怎么排列，都能通过覆盖盖出来！
+利用异或判断：`(flagb ^ flagr) == 1` 表示这段里只有一种颜色，这是绝对非法的！
+
+---
+
+## 4. CF784F Eating Candies
+**🏷️ 核心标签**：`相向双指针`、`贪心`
+
+> **📝 题意简述**：
+> 两个人从数组两头开始吃糖果，求他们吃下相同总重量时，最多能吃多少个糖果。
+
+### ☠️ 我的死因
+- 简单的双指针，但边界条件和谁该移动的判断容易乱。
+### 💡 核心破局点
+**“哪边轻就让哪边多吃一个！”**
+维护左右指针 $L$ 和 $R$，以及 `suml` 和 `sumr`。只有当 `suml == sumr` 时才记录有效答案。如果左边轻，左指针右移；反之右指针左移。
+
+---
+
+## 5. CF790D X-Sum
+**🏷️ 核心标签**：`矩阵对角线`、`预处理降维`
+
+> **📝 题意简述**：
+> 找出一个格子，使得经过它的两条斜对角线上的元素之和最大。
+
+### ☠️ 我的死因
+- 比赛时用四个 for 循环纯暴力扩展找斜线，不仅写错了字母，而且数据大了绝对 TLE。
+### 💡 核心破局点
+**“主副对角线的坐标恒定规律！”**
+- **主对角线**（左上到右下）上的点，横纵坐标之差恒定：`i - j`（为防负数加上 $m$）。
+- **副对角线**（右上到左下）上的点，横纵坐标之和恒定：`i + j`。
+提前用 $O(N^2)$ 把两条对角线的和预处理进 `l` 和 `r` 数组，查询时直接 $O(1)$ 读取 `l[i+j] + r[i-j+m] - tu[i][j]` 即可！
+
+---
+
+## 6. CF790E Eating Queries
+**🏷️ 核心标签**：`前缀和`、`二分查找`、`贪心`
+
+> **📝 题意简述**：
+> 每次询问给一个目标 $k$，问在数组里最少选几个数，和能 $\ge k$。
+
+### ☠️ 我的死因
+- 每次询问都重新排一次序并 $O(N)$ 遍历累加，总时间 $O(N \times Q)$ 导致超时。
+### 💡 核心破局点
+**“单调性是二分的好朋友！”**
+因为想要“选的数最少”，一定是贪心选最大的几个数。将原数组**降序排序**后做**前缀和**。前缀和数组天然单调递增，面对 $Q$ 次询问，直接用 `lower_bound` $O(\log N)$ 秒杀。
+
+---
+
+## 7. CF790F Longest Strike
+**🏷️ 核心标签**：`哈希表(Map)`、`连号判断`
+
+> **📝 题意简述**：
+> 找出出现次数均 $\ge k$ 的最长连续整数序列 $[L, R]$。
+
+### ☠️ 我的死因
+- 没确定的把握不敢用 map。找连续区间时指针滑动混乱。
+### ⚠️ 代码避坑点
+**“最后一段连号极其容易被漏掉！”**
+当遍历结束时，如果最长的那一段刚好在数组末尾，循环里的 `else` 不会触发。**必须在 for 循环外面再补一次长度比较更新答案！**
+### 💻 核心代码实现
+```cpp
+vector<int> satisfy;
+for(auto &it : mp) {
+    if(it.second >= k) satisfy.push_back(it.first);
+}
+// 找最长连续 +1 段
+for (int i = 1; i < len; i++) {
+    if (satisfy[i] == satisfy[i - 1] + 1) {
+        r = satisfy[i];
+    } else {
+        if (r - l > maxn) { maxn = r - l; ansl = l; ansr = r; }
+        l = satisfy[i]; r = satisfy[i];
+    }
+}
+// 【防坑点】别漏掉最后一段！
+if (r - l > maxn) { ansl = l; ansr = r; }
+```
+
+---
+
+## 8. [Edu189C] Red-Black Pairs
+**🏷️ 核心标签**：`动态规划 (DP)`
+
+> **📝 题意简述**：
+> 给定两行颜色串，用 1x2(竖) 或 2x1(横) 的骨牌覆盖，要求异色对最多/最少代价。
+
+### 💡 核心破局点
+**“要么竖着摆一对，要么横着摆两对！”**
+典型的线性 DP。从后往前推，到达第 $i$ 列时，我们只有两种选择：
+1. `v`：第 $i$ 列上下竖着配对。代价加上 `dp[i+1]`。
+2. `h`：第 $i$ 列和第 $i+1$ 列横着配对（上跟上，下跟下）。代价加上 `dp[i+2]`。
+
+---
+
+## 9. [CF799H] Gambling
+**🏷️ 核心标签**：`哈希表存坐标`、`最大子段和变形`
+
+> **📝 题意简述**：
+> 选定一个数字和区间，区间内遇到这个数赢钱，遇到别的数输钱，求最大收益。
+
+### 💡 核心破局点
+**“抽离无关项，重塑最大子段和！”**
+如果只盯着某一个数 $X$ 玩，其他数全是负债。用 `map<int, vector<int>>` 记录每个数出现的所有下标。
+对于相同的数 $X$，它相邻两次出现的坐标差 $(y - lst - 1)$ 就是中间夹杂的“别的数”的个数，即损失的钱。收益公式转化为：`sum = 1 (当前选中) - (y - lst - 1) (中间损失)`，完美套用最大子段和 DP！
+
+---
+
+## 10. [CF1076D] OutOfMemoryError (高频覆盖与单点修改)
+**🏷️ 核心标签**：`时间戳 (Lazy Update)`、`防 O(N) 拷贝`
+
+### ☠️ 我的死因
+- 遇到全局重置时直接写 `a = d`，导致 $O(N \times M)$ 超时。
+### 💡 核心破局点
+**“维护版本号，被动唤醒数据！”**
+不用真实去修改数组，而是维护一个全局变量 `last_change` 记录最后一次重置的时间。读取/修改任何一个数 `a[b]` 前，先看它的“个人上次修改时间”是否老于全局时间，如果老于，说明它是旧版本，先用备份值把它“唤醒”，再做修改。
+**⚠️ 致命陷阱**：在做任何 `if (a[b] + c <= h)` 判定前，必须先唤醒数据！
+
+---
+
+## 11. [CF1076E] The Robotic Rush
+**🏷️ 核心标签**：`相对运动转换`、`二维偏序`、`离散化+BIT`
+
+> **📝 题意简述**：
+> 所有机器人同步移动，碰到尖刺就死。查询每一步后存活数量。
+
+### 💡 核心破局点
+**“机器人不动，尖刺和边界在动！”**
+机器人会不会死，只取决于它向左能走多远（$DL_i$）和向右能走多远（$DR_i$）。
+随着指令推进，历史最大左移距离 $X$ 和右移距离 $Y$ 是单调递增的！
+**降维打击策略**：
+1. 把左死 $DL_i \le X$ 的机器人从树状数组中 **物理剔除（-1）**。
+2. 对于右死 $DR_i \le Y$ 的机器人，留在树状数组里，但是查询时只查后缀和 `ask(size) - ask(r_y - 1)` 进行 **逻辑屏蔽**！
+
+---
+
+## 12. [CF1095C] Mental Monumental / MEX and Modulo
+**🏷️ 核心标签**：`取模极限性质`、`二分答案`
+
+### 💡 核心破局点
+**“取模的最大保留价值”**
+一个数 $A$ 被取模后，最大能变成什么？结论是 $\le \lfloor (A-1)/2 \rfloor$。
+利用二分答案猜最终的最大 MEX 值 $target$。验证时，贪心保留原本就在 $target$ 以内的数，大于 $target$ 的数全拿去填补空缺，看其取模后能否刚好塞满坑位。
+
+---
+
+## 13. [CF1095D] Reserved Reversals
+**🏷️ 核心标签**：`奇偶不变性`、`极值枢轴`
+
+> **📝 题意简述**：
+> 只有当区间最大值+最小值和为奇数时才能翻转，问能否排序。
+
+### ☠️ 我的死因
+- 想得太复杂，企图找条件挽救内部无序的奇数/偶数序列。
+### 💡 核心破局点
+**“奇偶互不干涉，同色相对顺序被锁死！”**
+要想交换两个同色（如同为奇数）的相对位置，必须借用一个异色极值作为枢轴。但这必然会导致另一组颜色的顺序被颠倒。
+**大道至简结论**：只要原数组里的奇数序列自身不是非递减的，或者偶数序列自身不是非递减的，就**绝对**救不回来！
+
+---
+
+## 14. [牛客] We are the Lights (行列涂色)
+**🏷️ 核心标签**：`离线处理`、`时光倒流`
+
+> **📝 题意简述**：
+> 不断给整行或整列涂色，求最后某种颜色的总数。
+
+### 💡 核心破局点
+**“后来者居上，倒序即真理！”**
+正向推导会被反复覆盖，极其难算交叉点。
+**直接时光倒流从最后一次操作往前扫**！只要某一行/列在倒序中“第一次”被涂色，这就是它的最终归宿，打上标记定死。计算时扣除掉已经被定死的交叉行列即可。
+
+---
+
+## 15. 哥德巴赫猜想定理扩展
+**🏷️ 核心标签**：`数论`
+
+### 💡 知识点总结
+1. **强哥德巴赫猜想**：任一 $>2$ 的**偶数**可写成两个质数之和。
+2. **弱哥德巴赫猜想**：任一 $>5$ 的**奇数**可写成三个奇质数之和。
+**解题应用分情况**：
+- $n=1$：本身必须是质数。
+- $n=2$：和为偶数用强哥猜；和为奇数时，必须是 `2 + 质数` 才成立（即 和-2 必须是质数）。
+- $n \ge 3$：只要总和 $\ge 2 \times n$ 均成立。
