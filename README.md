@@ -65,3 +65,19 @@
 3. **隔离代码块**：在包裹代码的 ` ```cpp ` 和 ` ``` ` 前后，**必须保留空行**，确保渲染引擎不误判。
 4. **内联数学公式**：利用 `$...$` 记录代数转换（例如 $S_R - S_{L-1} < t$ 移项变为 $S_{L-1} > S_R - t$），比纯文本更严谨、更具可读性。
 5. **视觉切割**：在每一道错题、每一个大知识点结束时，敲三个减号 `---` 生成分隔线，让大脑在阅读时有喘息的空间。
+
+
+
+
+
+<font color="green"> AC </font>
+
+<font color="red"> WA </font>
+
+
+
+![image-20260505145828443](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20260505145828443.png)
+
+
+
+![image-20260505171441927](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20260505171441927.png)
